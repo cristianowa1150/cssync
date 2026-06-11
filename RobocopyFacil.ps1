@@ -1,5 +1,5 @@
 ﻿# =====================================================================
-#  Robocopy Facil v1.1 — interface grafica simples para o Robocopy do Windows
+#  Robocopy Facil v1.2 — interface grafica simples para o Robocopy do Windows
 #  © 2026 Cristiano Silveira Silva — Licença CC BY 4.0
 #  Requisitos: nenhum. Usa apenas PowerShell + .NET, ja incluidos no Windows.
 #  Para abrir: clique duas vezes em "Iniciar - Robocopy Facil.bat"
@@ -158,6 +158,32 @@ $lblHint.Size      = New-Object System.Drawing.Size(916, 24)
 $lblHint.Font      = New-Object System.Drawing.Font('Segoe UI', 10.5)
 $lblHint.ForeColor = [System.Drawing.Color]::DimGray
 
+# ----- Cor do texto da janela de cópia -----
+# Códigos do comando "color" do cmd: fundo preto + cor da fonte
+$mapaCores = [ordered]@{
+    'Verde (estilo Linux)'    = '0A'
+    'Padrão (cinza claro)'    = ''
+    'Branco brilhante'        = '0F'
+    'Amarelo'                 = '0E'
+    'Ciano'                   = '0B'
+    'Vermelho claro'          = '0C'
+    'Magenta'                 = '0D'
+    'Preto sobre branco'      = 'F0'
+}
+
+$lblCor          = New-Object System.Windows.Forms.Label
+$lblCor.Text     = 'Cor do texto da cópia:'
+$lblCor.Location = New-Object System.Drawing.Point(490, 516)
+$lblCor.AutoSize = $true
+
+$cmbCor               = New-Object System.Windows.Forms.ComboBox
+$cmbCor.DropDownStyle = 'DropDownList'
+$cmbCor.Location      = New-Object System.Drawing.Point(688, 511)
+$cmbCor.Size          = New-Object System.Drawing.Size(240, 30)
+$cmbCor.Items.AddRange([string[]]@($mapaCores.Keys))
+$cmbCor.SelectedIndex = 0
+$tooltip.SetToolTip($cmbCor, 'Cor da fonte da janela de console onde a cópia roda (comando "color" do cmd).')
+
 # ----- Pré-visualização do comando -----
 $lblPrev          = New-Object System.Windows.Forms.Label
 $lblPrev.Text     = 'Comando que será executado:'
@@ -224,14 +250,14 @@ $btnAjuda.ForeColor = $corNovos
 
 # ----- Rodapé -----
 $lblRodape           = New-Object System.Windows.Forms.Label
-$lblRodape.Text      = 'v1.1 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
+$lblRodape.Text      = 'v1.2 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
 $lblRodape.Location  = New-Object System.Drawing.Point(12, 768)
 $lblRodape.Size      = New-Object System.Drawing.Size(916, 26)
 $lblRodape.Font      = New-Object System.Drawing.Font('Segoe UI', 10.5)
 $lblRodape.ForeColor = [System.Drawing.Color]::DimGray
 
 $form.Controls.AddRange(@($lblSrc, $txtSrc, $btnSrc, $lblDst, $txtDst, $btnDst, $grp,
-    $lblXF, $txtXF, $lblXD, $txtXD, $lblHint, $lblPrev, $txtPrev,
+    $lblXF, $txtXF, $lblXD, $txtXD, $lblHint, $lblCor, $cmbCor, $lblPrev, $txtPrev,
     $btnAtualizar, $btnEspelhar, $btnExec, $btnSim, $btnNovos, $btnAjuda, $lblRodape))
 
 # ---------------------------------------------------------------------
@@ -302,17 +328,19 @@ function Executar([string[]]$flags) {
     # Executa num arquivo .cmd temporário: evita qualquer problema de aspas
     # e mantém a janela aberta para ver o relatório final do robocopy.
     $tmp = Join-Path $env:TEMP 'robocopy-facil.cmd'
-    @(
-        '@echo off'
-        'echo ================================================='
-        "echo  $cmd"
-        'echo ================================================='
-        'echo.'
-        $cmd
-        'echo.'
-        'echo ===== Concluido. Codigo de saida: %ERRORLEVEL%  (0 a 7 = sucesso) ====='
-        'pause'
-    ) | Set-Content -LiteralPath $tmp -Encoding Oem
+    $linhas = New-Object 'System.Collections.Generic.List[string]'
+    $linhas.Add('@echo off')
+    $codCor = [string]$mapaCores[[string]$cmbCor.SelectedItem]
+    if ($codCor) { $linhas.Add("color $codCor") }
+    $linhas.Add('echo =================================================')
+    $linhas.Add("echo  $cmd")
+    $linhas.Add('echo =================================================')
+    $linhas.Add('echo.')
+    $linhas.Add($cmd)
+    $linhas.Add('echo.')
+    $linhas.Add('echo ===== Concluido. Codigo de saida: %ERRORLEVEL%  (0 a 7 = sucesso) =====')
+    $linhas.Add('pause')
+    $linhas | Set-Content -LiteralPath $tmp -Encoding Oem
     Start-Process cmd.exe -ArgumentList '/c', $tmp
 }
 
@@ -379,9 +407,9 @@ function Mostrar-Ajuda {
     Add-Ajuda $rtb "8 ou mais = houve erro em algum arquivo`n`n" $corPerigo $true 12
 
     Add-Ajuda $rtb "  DICAS`n" $preto $true 13
-    Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera robocopy-facil.log).`n`n" $preto $false 12
+    Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera robocopy-facil.log).`n  • A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.`n`n" $preto $false 12
 
-    Add-Ajuda $rtb "  Robocopy Fácil v1.1 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
+    Add-Ajuda $rtb "  Robocopy Fácil v1.2 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
 
     $rtb.SelectionStart = 0
     $rtb.ScrollToCaret()
