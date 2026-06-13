@@ -269,6 +269,7 @@ if TK_AVAILABLE:
             self.v_xf = tk.StringVar()
             self.v_xd = tk.StringVar()
             self.v_cor = tk.StringVar(value=CORES[0][0])
+            self.v_delta = tk.BooleanVar(value=False)
 
             self.options = build_options()
             self.opt_vars = []
@@ -354,6 +355,14 @@ if TK_AVAILABLE:
             self.preview.pack(fill="x", padx=12, pady=(4, 0))
             self.preview.configure(state="disabled")
 
+            # ----- Cópia delta (diferencial do Linux/rsync) — vale para todos os modos -----
+            tk.Checkbutton(
+                self, variable=self.v_delta, anchor="w", justify="left", fg=COR_ATUALIZAR,
+                font=("Sans", 11, "bold"), command=self._update_preview,
+                text="⚡ Cópia delta (rsync): envia só as PARTES que mudaram de cada arquivo — "
+                     "excelente para arquivos grandes (bancos de dados, VMs, vídeos, PSTs)"
+            ).pack(fill="x", padx=12, pady=(6, 0))
+
             # ----- Botões de modo -----
             self.btn_atualizar = tk.Button(
                 self, text="▶  ATUALIZAR BACKUP (A → B) — copia NOVOS e ALTERADOS, não apaga nada em B",
@@ -403,6 +412,10 @@ if TK_AVAILABLE:
                     flags.append(op["flag"])
             return flags
 
+        def delta_flags(self):
+            # --no-whole-file força o algoritmo delta do rsync mesmo em cópia local
+            return ["--no-whole-file"] if self.v_delta.get() else []
+
         def cor_atual(self):
             for nome, bg, fg in CORES:
                 if nome == self.v_cor.get():
@@ -410,7 +423,8 @@ if TK_AVAILABLE:
             return CORES[0][1], CORES[0][2]
 
         def _update_preview(self):
-            cmd = build_command(self.get_checked_flags(), self.v_src.get(),
+            flags = self.get_checked_flags() + self.delta_flags()
+            cmd = build_command(flags, self.v_src.get(),
                                 self.v_dst.get(), self.v_xf.get(), self.v_xd.get())
             self.preview.configure(state="normal")
             self.preview.delete("1.0", "end")
@@ -439,6 +453,7 @@ if TK_AVAILABLE:
                 messagebox.showerror("CSSync", "rsync não encontrado.\n\nInstale com:\n" + install_hint())
                 return
 
+            flags = list(flags) + self.delta_flags()
             cmd = build_command(flags, self.v_src.get(), self.v_dst.get(),
                                 self.v_xf.get(), self.v_xd.get())
             self.preview.configure(state="normal")
@@ -512,6 +527,13 @@ if TK_AVAILABLE:
             add("Apenas LISTA o que seria copiado ou apagado, sem fazer nada de verdade.\n"
                 "Não copia, não altera e não apaga nenhum arquivo — nem em A, nem em B.\n"
                 "Recomendado: simule antes do primeiro espelhamento para conferir o que será feito.\n\n")
+
+            add("⚡ CÓPIA DELTA — diferencial do Linux\n", COR_ATUALIZAR, True, 13)
+            add("Marque 'Cópia delta' para o rsync enviar APENAS as partes que mudaram de cada arquivo,\n"
+                "em vez de recopiar o arquivo inteiro. Faz enorme diferença em arquivos grandes que mudam\n"
+                "pouco — bancos de dados, máquinas virtuais, vídeos, arquivos PST. Vale para todos os modos.\n"
+                "Tecnicamente força o algoritmo delta (--no-whole-file) mesmo em cópia local — algo que o\n"
+                "robocopy do Windows não faz.\n\n")
 
             add("CÓDIGO DE SAÍDA (mostrado no fim da cópia)\n", "#282828", True, 13)
             add("0 = tudo certo.   ")

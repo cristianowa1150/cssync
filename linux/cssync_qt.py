@@ -361,6 +361,18 @@ if QT_AVAILABLE:
             self.preview.setStyleSheet("QPlainTextEdit{background:#0f172a;color:#e2e8f0;}")
             root.addWidget(self.preview)
 
+            # Cópia delta (diferencial do Linux/rsync) — aplica-se a TODOS os modos
+            self.chk_delta = QCheckBox(
+                "⚡ Cópia delta (rsync): envia só as PARTES que mudaram de cada arquivo — "
+                "excelente para arquivos grandes (bancos de dados, VMs, vídeos, PSTs)")
+            self.chk_delta.setStyleSheet(f"color:{COR_ATUALIZAR};font-weight:bold;")
+            self.chk_delta.setToolTip(
+                "Força o algoritmo delta do rsync (--no-whole-file) mesmo em cópia local.\n"
+                "Em vez de recopiar o arquivo inteiro quando ele muda, transfere apenas os\n"
+                "blocos alterados. Vale para os 3 modos, o Executar marcadas e o Simular.")
+            self.chk_delta.toggled.connect(self._update_preview)
+            root.addWidget(self.chk_delta)
+
             # Botões de modo
             self.btn_atualizar = QPushButton(
                 "▶  ATUALIZAR BACKUP (A → B) — copia NOVOS e ALTERADOS, não apaga nada em B")
@@ -423,12 +435,17 @@ if QT_AVAILABLE:
         def get_checked_flags(self):
             return [op["flag"] for op, cb in zip(self.options, self.checks) if cb.isChecked()]
 
+        def delta_flags(self):
+            # --no-whole-file força o algoritmo delta do rsync mesmo em cópia local
+            return ["--no-whole-file"] if self.chk_delta.isChecked() else []
+
         def cor_atual(self):
             i = self.cmb_cor.currentIndex()
             return CORES[i][1], CORES[i][2]
 
         def _update_preview(self):
-            cmd = build_command(self.get_checked_flags(), self.ed_src.text(),
+            flags = self.get_checked_flags() + self.delta_flags()
+            cmd = build_command(flags, self.ed_src.text(),
                                 self.ed_dst.text(), self.ed_xf.text(), self.ed_xd.text())
             self.preview.setPlainText(preview_string(cmd))
 
@@ -455,6 +472,7 @@ if QT_AVAILABLE:
                                      "rsync não encontrado.\n\nInstale com:\n" + install_hint())
                 return
 
+            flags = list(flags) + self.delta_flags()
             cmd = build_command(flags, self.ed_src.text(), self.ed_dst.text(),
                                 self.ed_xf.text(), self.ed_xd.text())
             self.preview.setPlainText(preview_string(cmd))
@@ -532,6 +550,14 @@ if QT_AVAILABLE:
             <p><b style="color:{COR_SIMULAR};font-size:15px;">SIMULAR — 100% seguro</b><br>
             Apenas <b>lista</b> o que seria copiado ou apagado, sem fazer nada de verdade.
             Recomendado: simule antes do primeiro espelhamento.</p>
+
+            <h3>⚡ Cópia delta — diferencial do Linux</h3>
+            <p>Marque <b>Cópia delta</b> para o rsync enviar <b>apenas as partes que mudaram</b> de cada
+            arquivo, em vez de recopiar o arquivo inteiro. Faz enorme diferença em arquivos grandes que
+            mudam pouco — bancos de dados, máquinas virtuais, vídeos, arquivos PST. Aplica-se a <b>todos
+            os modos</b> (Atualizar, Espelhar, Só novos, Executar marcadas e Simular). Tecnicamente, força
+            o algoritmo delta (<code>--no-whole-file</code>) mesmo em cópia local — algo que o robocopy do
+            Windows não faz.</p>
 
             <h3>Código de saída (no fim da cópia)</h3>
             <p>0 = tudo certo. &nbsp; <b style="color:{perigo};">diferente de 0 = algum arquivo não pôde ser copiado</b>

@@ -93,6 +93,12 @@ python3 cssync_tk.py
 
 A janela mostra o comando `rsync` exato antes de executar, e a cópia roda numa janela de console com a cor que você escolher.
 
+### ⚡ Cópia delta (exclusivo do Linux)
+
+Marque **Cópia delta** para o `rsync` transferir **apenas as partes que mudaram** de cada arquivo, em vez de recopiar o arquivo inteiro. É a maior vantagem do rsync sobre o robocopy do Windows e faz enorme diferença em arquivos grandes que mudam pouco — bancos de dados, máquinas virtuais, vídeos, arquivos PST de e-mail.
+
+A opção vale para **todos os modos** (Atualizar, Espelhar, Só novos, Executar marcadas e Simular). Tecnicamente ela acrescenta `--no-whole-file`, que força o algoritmo delta do rsync **mesmo em cópia local** (por padrão o rsync o desliga em transferências disco→disco).
+
 ## Estrutura desta pasta
 
 ```

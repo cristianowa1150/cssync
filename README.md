@@ -49,6 +49,8 @@ clone ou baixe este repositório e dê dois cliques em **`Iniciar - CSSync.bat`*
 
 Há um porte nativo que faz exatamente o mesmo papel usando o **`rsync`** — origem (A) → destino (B), os mesmos 3 modos, simulação segura e cor do console. Tudo na pasta **[`linux/`](linux/)**, com interfaces Qt (Fedora/KDE) e Tkinter (Debian 12) e scripts para gerar instaladores `.rpm`/`.deb`. Veja [`linux/README.md`](linux/README.md) para as instruções completas.
 
+> ⚡ **Exclusivo do Linux — cópia delta:** a versão Linux tem uma opção para o `rsync` transferir **apenas as partes que mudaram** de cada arquivo (em vez do arquivo inteiro). É a grande vantagem do rsync sobre o robocopy, ideal para arquivos grandes que mudam pouco (bancos de dados, VMs, vídeos). Vale para todos os modos.
+
 ## 🛡️ Segurança dos seus dados
 
 - A pasta **FONTE (A) nunca é modificada**, em nenhum modo — a ferramenta só lê dela.
