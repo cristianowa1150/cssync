@@ -326,10 +326,11 @@ if TK_AVAILABLE:
                 cb = tk.Checkbutton(inner, variable=var,
                                     text=f"{show}   —   {op['desc']}",
                                     anchor="w", justify="left",
+                                    font=("Sans", 11),
                                     command=self._update_preview)
                 if op.get("danger"):
                     cb.configure(fg=COR_PERIGO)
-                cb.pack(fill="x", anchor="w", padx=4, pady=1)
+                cb.pack(fill="x", anchor="w", padx=4, pady=2)
 
             # ----- Exclusões -----
             f3 = ttk.Frame(self); f3.pack(fill="x", padx=12, pady=(10, 0))

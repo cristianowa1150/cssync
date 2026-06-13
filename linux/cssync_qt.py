@@ -319,6 +319,7 @@ if QT_AVAILABLE:
                 show = op.get("show", op["flag"])
                 cb = QCheckBox(f"{show}   —   {op['desc']}")
                 cb.setChecked(op["checked"])
+                f = cb.font(); f.setPointSize(11); cb.setFont(f)
                 if op.get("danger"):
                     cb.setStyleSheet(f"color:{COR_PERIGO};")
                 cb.toggled.connect(self._update_preview)
