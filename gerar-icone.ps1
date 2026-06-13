@@ -1,5 +1,5 @@
-# =====================================================================
-#  Gera o icone do Robocopy Facil (robocopy-facil.ico + icone-256.png)
+﻿# =====================================================================
+#  Gera o icone do CSSync (cssync.ico + icone-256.png)
 #  Desenho: pasta FONTE (amarela) -> seta -> pasta DESTINO (verde)
 #  Formato: entradas BMP nao-comprimidas ate 64px (compatibilidade GDI+)
 #           e PNG para 128/256px, como nos icones padrao do Windows.
@@ -122,7 +122,7 @@ for ($i = 0; $i -lt $tamanhos.Count; $i++) {
 }
 foreach ($dados in $imagens) { $bw.Write([byte[]]$dados) }
 
-$destino = Join-Path $PSScriptRoot 'robocopy-facil.ico'
+$destino = Join-Path $PSScriptRoot 'cssync.ico'
 [IO.File]::WriteAllBytes($destino, $ms.ToArray())
 $bw.Dispose(); $ms.Dispose()
 "Icone gerado: $destino ($([math]::Round((Get-Item $destino).Length / 1KB)) KB)"

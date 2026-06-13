@@ -1,6 +1,6 @@
-# Executável é distribuído pela página de Releases, não pelo git
-RobocopyFacil.exe
+﻿# Executável é distribuído pela página de Releases, não pelo git
+CSSync.exe
 
 # Logs e temporários
 *.log
-robocopy-facil.cmd
+cssync.cmd

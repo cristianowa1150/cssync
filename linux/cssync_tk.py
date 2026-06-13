@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # =====================================================================
-#  Robocopy Fácil — versão Linux (rsync)
-#  Porte fiel do "Robocopy Fácil" (Windows/PowerShell) de Cristiano Silveira Silva.
+#  CSSync — versão Linux (rsync)
+#  Porte fiel do "CSSync" (Windows/PowerShell) de Cristiano Silveira Silva.
 #  © 2026 Cristiano Silveira Silva — Licença CC BY 4.0
 #  Faz o mesmo papel: monta o comando, mostra exatamente o que vai rodar
 #  e executa o rsync (o "robocopy do Linux"). A pasta FONTE (A) nunca é alterada.
@@ -21,8 +21,8 @@ import queue
 import threading
 import subprocess
 
-APP_VERSION = "1.2"
-LOG_PATH = os.path.expanduser("~/robocopy-facil.log")
+APP_VERSION = "1.5"
+LOG_PATH = os.path.expanduser("~/cssync.log")
 
 # ---------------------------------------------------------------------
 # Opções do rsync mostradas na tela (equivalentes às do robocopy).
@@ -51,7 +51,7 @@ def build_options():
         {"flag": "--info=progress2",   "checked": True,  "desc": "Mostra o progresso e o percentual geral da cópia"},
         {"flag": "-v",                 "checked": False, "desc": "Modo detalhado: mostra cada arquivo processado"},
         {"flag": "--log-file=" + LOG_PATH, "show": "--log-file", "checked": False,
-         "desc": "Salva um registro da cópia em robocopy-facil.log na sua pasta pessoal"},
+         "desc": "Salva um registro da cópia em cssync.log na sua pasta pessoal"},
         {"flag": "--delete",           "checked": False, "danger": True,
          "desc": "ESPELHAR: deixa B IDÊNTICO a A (APAGA de B tudo que não existe mais em A!)"},
     ]
@@ -150,7 +150,7 @@ if TK_AVAILABLE:
         """Janela que mostra o comando e a saída ao vivo do rsync (com cor escolhida)."""
         def __init__(self, master, cmd, retries, wait, bg, fg, dry_run):
             super().__init__(master)
-            self.title("Cópia em andamento — Robocopy Fácil")
+            self.title("Cópia em andamento — CSSync")
             self.geometry("900x560")
             self.cmd = cmd
             self.retries = retries
@@ -251,16 +251,16 @@ if TK_AVAILABLE:
 
         def _on_close_request(self):
             if self.proc is not None:
-                if not messagebox.askyesno("Robocopy Fácil",
+                if not messagebox.askyesno("CSSync",
                                            "A cópia ainda está rodando. Parar e fechar?"):
                     return
                 self.stop()
             self.destroy()
 
-    class RoboCopyApp(tk.Tk):
+    class CSSyncApp(tk.Tk):
         def __init__(self):
             super().__init__()
-            self.title("Robocopy Fácil  —  copiar FONTE (A)  →  DESTINO (B)")
+            self.title("CSSync  —  copiar FONTE (A)  →  DESTINO (B)")
             self.geometry("960x860")
             self.minsize(900, 760)
 
@@ -427,16 +427,16 @@ if TK_AVAILABLE:
             src = format_path(self.v_src.get())
             dst = format_path(self.v_dst.get())
             if not src or not dst:
-                messagebox.showwarning("Robocopy Fácil", "Informe a pasta FONTE e a pasta DESTINO.")
+                messagebox.showwarning("CSSync", "Informe a pasta FONTE e a pasta DESTINO.")
                 return
             if not os.path.isdir(src):
-                messagebox.showwarning("Robocopy Fácil", f"A pasta FONTE não existe:\n{src}")
+                messagebox.showwarning("CSSync", f"A pasta FONTE não existe:\n{src}")
                 return
             if os.path.abspath(src) == os.path.abspath(dst):
-                messagebox.showwarning("Robocopy Fácil", "A FONTE e o DESTINO são a mesma pasta.")
+                messagebox.showwarning("CSSync", "A FONTE e o DESTINO são a mesma pasta.")
                 return
             if not shutil.which("rsync"):
-                messagebox.showerror("Robocopy Fácil", "rsync não encontrado.\n\nInstale com:\n" + install_hint())
+                messagebox.showerror("CSSync", "rsync não encontrado.\n\nInstale com:\n" + install_hint())
                 return
 
             cmd = build_command(flags, self.v_src.get(), self.v_dst.get(),
@@ -478,7 +478,7 @@ if TK_AVAILABLE:
         # ---------------- Ajuda ----------------
         def show_help(self):
             win = tk.Toplevel(self)
-            win.title("Ajuda — Robocopy Fácil")
+            win.title("Ajuda — CSSync")
             win.geometry("860x680")
             txt = tk.Text(win, wrap="word", bg="white", relief="flat",
                           font=("Sans", 11), padx=16, pady=12)
@@ -521,10 +521,10 @@ if TK_AVAILABLE:
             add("DICAS\n", "#282828", True, 13)
             add("• Pendrive ou HD externo em FAT32/exFAT: marque 'Tolerância de 1s na data' para evitar recópias.\n"
                 "• Arquivos negando acesso (donos/permissões): abra o app com sudo e marque dono, grupo e ACLs.\n"
-                "• Quer um registro do que foi copiado: marque '--log-file' (gera robocopy-facil.log na sua pasta).\n"
+                "• Quer um registro do que foi copiado: marque '--log-file' (gera cssync.log na sua pasta).\n"
                 "• A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.\n\n")
 
-            add(f"Robocopy Fácil v{APP_VERSION} (Linux/rsync) — © 2026 Cristiano Silveira Silva — CC BY 4.0\n",
+            add(f"CSSync v{APP_VERSION} (Linux/rsync) — © 2026 Cristiano Silveira Silva — CC BY 4.0\n",
                 "#777777", False, 10)
 
             txt.configure(state="disabled")
@@ -537,7 +537,7 @@ def main():
         sys.exit(1)
     if not shutil.which("rsync"):
         print("Aviso: rsync não encontrado. O app abre, mas instale com:\n  " + install_hint())
-    app = RoboCopyApp()
+    app = CSSyncApp()
     app.mainloop()
 
 

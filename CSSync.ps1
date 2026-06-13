@@ -1,8 +1,8 @@
 ﻿# =====================================================================
-#  Robocopy Facil v1.4 — interface grafica simples para o Robocopy do Windows
+#  CSSync v1.5 — interface grafica simples para o Robocopy do Windows
 #  © 2026 Cristiano Silveira Silva — Licença CC BY 4.0
 #  Requisitos: nenhum. Usa apenas PowerShell + .NET, ja incluidos no Windows.
-#  Para abrir: clique duas vezes em "Iniciar - Robocopy Facil.bat"
+#  Para abrir: clique duas vezes em "Iniciar - CSSync.bat"
 # =====================================================================
 
 Add-Type -AssemblyName System.Windows.Forms
@@ -30,7 +30,7 @@ $opcoes = @(
     @{ Flag = '/ETA';       Marcado = $false; Desc = 'Mostra o tempo estimado para terminar cada arquivo' }
     @{ Flag = '/NP';        Marcado = $false; Desc = 'Oculta o percentual de progresso (deixa a saída mais limpa)' }
     @{ Flag = '/V';         Marcado = $false; Desc = 'Modo detalhado: mostra também os arquivos que foram ignorados' }
-    @{ Flag = ('/TEE /LOG+:"{0}\robocopy-facil.log"' -f $env:USERPROFILE); Marcado = $false; Desc = 'Salva um registro da cópia em robocopy-facil.log na sua pasta de usuário' }
+    @{ Flag = ('/TEE /LOG+:"{0}\cssync.log"' -f $env:USERPROFILE); Marcado = $false; Desc = 'Salva um registro da cópia em cssync.log na sua pasta de usuário' }
     @{ Flag = '/MIR';       Marcado = $false; Desc = 'ESPELHAR: destino fica IDÊNTICO à origem (APAGA de B o que não existe em A!)' }
 )
 
@@ -56,7 +56,7 @@ $corPerigo    = [System.Drawing.Color]::Firebrick
 # Janela principal
 # ---------------------------------------------------------------------
 $form                 = New-Object System.Windows.Forms.Form
-$form.Text            = 'Robocopy Fácil  —  copiar FONTE (A)  →  DESTINO (B)'
+$form.Text            = 'CSSync  —  copiar FONTE (A)  →  DESTINO (B)'
 $form.ClientSize      = New-Object System.Drawing.Size(940, 798)
 $form.StartPosition   = 'CenterScreen'
 $form.FormBorderStyle = 'Sizable'
@@ -69,8 +69,8 @@ try {
     $exeAtual = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
     if ($exeAtual -notmatch 'powershell|pwsh') {
         $form.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($exeAtual)
-    } elseif (Test-Path (Join-Path $PSScriptRoot 'robocopy-facil.ico')) {
-        $form.Icon = New-Object System.Drawing.Icon((Join-Path $PSScriptRoot 'robocopy-facil.ico'))
+    } elseif (Test-Path (Join-Path $PSScriptRoot 'cssync.ico')) {
+        $form.Icon = New-Object System.Drawing.Icon((Join-Path $PSScriptRoot 'cssync.ico'))
     }
 } catch {}
 
@@ -259,7 +259,7 @@ $btnAjuda.ForeColor = $corNovos
 
 # ----- Rodapé -----
 $lblRodape           = New-Object System.Windows.Forms.Label
-$lblRodape.Text      = 'v1.4 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
+$lblRodape.Text      = 'v1.5 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
 $lblRodape.Location  = New-Object System.Drawing.Point(12, 768)
 $lblRodape.Size      = New-Object System.Drawing.Size(916, 26)
 $lblRodape.Font      = New-Object System.Drawing.Font('Segoe UI', 10.5)
@@ -346,15 +346,15 @@ function Executar([string[]]$flags) {
     $dst = Format-Caminho $txtDst.Text
 
     if (-not $src -or -not $dst) {
-        [void][System.Windows.Forms.MessageBox]::Show('Informe a pasta FONTE e a pasta DESTINO.', 'Robocopy Fácil', 'OK', 'Warning')
+        [void][System.Windows.Forms.MessageBox]::Show('Informe a pasta FONTE e a pasta DESTINO.', 'CSSync', 'OK', 'Warning')
         return
     }
     if (-not (Test-Path -LiteralPath $src)) {
-        [void][System.Windows.Forms.MessageBox]::Show("A pasta FONTE não existe:`n$src", 'Robocopy Fácil', 'OK', 'Warning')
+        [void][System.Windows.Forms.MessageBox]::Show("A pasta FONTE não existe:`n$src", 'CSSync', 'OK', 'Warning')
         return
     }
     if ($src -ieq $dst) {
-        [void][System.Windows.Forms.MessageBox]::Show('A FONTE e o DESTINO são a mesma pasta.', 'Robocopy Fácil', 'OK', 'Warning')
+        [void][System.Windows.Forms.MessageBox]::Show('A FONTE e o DESTINO são a mesma pasta.', 'CSSync', 'OK', 'Warning')
         return
     }
     if (($flags -contains '/MIR') -and ($flags -notcontains '/L')) {
@@ -369,7 +369,7 @@ function Executar([string[]]$flags) {
 
     # Executa num arquivo .cmd temporário: evita qualquer problema de aspas
     # e mantém a janela aberta para ver o relatório final do robocopy.
-    $tmp = Join-Path $env:TEMP 'robocopy-facil.cmd'
+    $tmp = Join-Path $env:TEMP 'cssync.cmd'
     $linhas = New-Object 'System.Collections.Generic.List[string]'
     $linhas.Add('@echo off')
     $codCor = [string]$mapaCores[[string]$cmbCor.SelectedItem]
@@ -408,7 +408,7 @@ function Add-Ajuda($rtb, [string]$texto, [System.Drawing.Color]$cor, [bool]$negr
 
 function Mostrar-Ajuda {
     $fAjuda                 = New-Object System.Windows.Forms.Form
-    $fAjuda.Text            = 'Ajuda — Robocopy Fácil'
+    $fAjuda.Text            = 'Ajuda — CSSync'
     $fAjuda.ClientSize      = New-Object System.Drawing.Size(840, 680)
     $fAjuda.StartPosition   = 'CenterParent'
     $fAjuda.MinimizeBox     = $false
@@ -449,9 +449,9 @@ function Mostrar-Ajuda {
     Add-Ajuda $rtb "8 ou mais = houve erro em algum arquivo`n`n" $corPerigo $true 12
 
     Add-Ajuda $rtb "  DICAS`n" $preto $true 13
-    Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera robocopy-facil.log).`n  • A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.`n  • Os 3 botões de modo ignoram automaticamente pastas e arquivos de sistema do Windows:`n    `$RECYCLE.BIN, System Volume Information, Recovery, pagefile.sys, hiberfil.sys e swapfile.sys.`n`n" $preto $false 12
+    Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera cssync.log).`n  • A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.`n  • Os 3 botões de modo ignoram automaticamente pastas e arquivos de sistema do Windows:`n    `$RECYCLE.BIN, System Volume Information, Recovery, pagefile.sys, hiberfil.sys e swapfile.sys.`n`n" $preto $false 12
 
-    Add-Ajuda $rtb "  Robocopy Fácil v1.4 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
+    Add-Ajuda $rtb "  CSSync v1.5 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
 
     $rtb.SelectionStart = 0
     $rtb.ScrollToCaret()

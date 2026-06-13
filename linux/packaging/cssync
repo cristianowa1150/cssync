@@ -1,0 +1,3 @@
+#!/bin/sh
+# Lançador do CSSync
+exec python3 /usr/lib/cssync/cssync_linux.py "$@"

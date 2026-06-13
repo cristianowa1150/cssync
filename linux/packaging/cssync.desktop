@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=RoboCopy Fácil
+Name=CSSync
 GenericName=Cópia e sincronização de pastas
 Comment=Copie e sincronize pastas com o rsync (estilo robocopy) via interface gráfica
-Exec=robocopy-facil
-Icon=robocopy-facil
+Exec=cssync
+Icon=cssync
 Terminal=false
 Categories=Utility;System;Filesystem;FileTools;
 Keywords=rsync;backup;copia;copiar;sincronizar;sync;espelho;mirror;robocopy;

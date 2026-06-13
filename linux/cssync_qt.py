@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # =====================================================================
-#  Robocopy Fácil — versão Linux nativa (Qt / PySide6)
-#  Porte do "Robocopy Fácil" (Windows/PowerShell) de Cristiano Silveira Silva.
+#  CSSync — versão Linux nativa (Qt / PySide6)
+#  Porte do "CSSync" (Windows/PowerShell) de Cristiano Silveira Silva.
 #  © 2026 Cristiano Silveira Silva — Licença CC BY 4.0
 #  Usa o rsync por baixo (o "robocopy do Linux"). A pasta FONTE (A) nunca é alterada.
 #
@@ -17,8 +17,8 @@ import sys
 import shlex
 import shutil
 
-APP_VERSION = "1.2"
-LOG_PATH = os.path.expanduser("~/robocopy-facil.log")
+APP_VERSION = "1.5"
+LOG_PATH = os.path.expanduser("~/cssync.log")
 
 
 # ---------------------------------------------------------------------
@@ -44,7 +44,7 @@ def build_options():
         {"flag": "--info=progress2",  "checked": True,  "desc": "Mostra o progresso e o percentual geral da cópia"},
         {"flag": "-v",                "checked": False, "desc": "Modo detalhado: mostra cada arquivo processado"},
         {"flag": "--log-file=" + LOG_PATH, "show": "--log-file", "checked": False,
-         "desc": "Salva um registro da cópia em robocopy-facil.log na sua pasta pessoal"},
+         "desc": "Salva um registro da cópia em cssync.log na sua pasta pessoal"},
         {"flag": "--delete",          "checked": False, "danger": True,
          "desc": "ESPELHAR: deixa B IDÊNTICO a A (APAGA de B tudo que não existe mais em A!)"},
     ]
@@ -142,13 +142,13 @@ except Exception:
 
 if QT_AVAILABLE:
 
-    ICON_PATH = "/usr/share/icons/hicolor/scalable/apps/robocopy-facil.svg"
+    ICON_PATH = "/usr/share/icons/hicolor/scalable/apps/cssync.svg"
 
     class ConsoleDialog(QDialog):
         """Janela que mostra o comando e a saída ao vivo do rsync (cor escolhida)."""
         def __init__(self, parent, cmd, retries, wait, bg, fg, dry_run):
             super().__init__(parent)
-            self.setWindowTitle("Cópia em andamento — Robocopy Fácil")
+            self.setWindowTitle("Cópia em andamento — CSSync")
             self.resize(900, 560)
             self.cmd = cmd
             self.max_attempts = retries + 1
@@ -251,7 +251,7 @@ if QT_AVAILABLE:
 
         def closeEvent(self, ev):
             if self.proc is not None and self.proc.state() != QProcess.NotRunning:
-                r = QMessageBox.question(self, "Robocopy Fácil",
+                r = QMessageBox.question(self, "CSSync",
                                          "A cópia ainda está rodando. Parar e fechar?")
                 if r != QMessageBox.Yes:
                     ev.ignore()
@@ -259,10 +259,10 @@ if QT_AVAILABLE:
                 self.stop()
             ev.accept()
 
-    class RoboCopyWindow(QWidget):
+    class CSSyncWindow(QWidget):
         def __init__(self):
             super().__init__()
-            self.setWindowTitle("Robocopy Fácil  —  copiar FONTE (A)  →  DESTINO (B)")
+            self.setWindowTitle("CSSync  —  copiar FONTE (A)  →  DESTINO (B)")
             self.resize(980, 880)
             if os.path.exists(ICON_PATH):
                 self.setWindowIcon(QIcon(ICON_PATH))
@@ -442,16 +442,16 @@ if QT_AVAILABLE:
             src = format_path(self.ed_src.text())
             dst = format_path(self.ed_dst.text())
             if not src or not dst:
-                QMessageBox.warning(self, "Robocopy Fácil", "Informe a pasta FONTE e a pasta DESTINO.")
+                QMessageBox.warning(self, "CSSync", "Informe a pasta FONTE e a pasta DESTINO.")
                 return
             if not os.path.isdir(src):
-                QMessageBox.warning(self, "Robocopy Fácil", f"A pasta FONTE não existe:\n{src}")
+                QMessageBox.warning(self, "CSSync", f"A pasta FONTE não existe:\n{src}")
                 return
             if os.path.abspath(src) == os.path.abspath(dst):
-                QMessageBox.warning(self, "Robocopy Fácil", "A FONTE e o DESTINO são a mesma pasta.")
+                QMessageBox.warning(self, "CSSync", "A FONTE e o DESTINO são a mesma pasta.")
                 return
             if not shutil.which("rsync"):
-                QMessageBox.critical(self, "Robocopy Fácil",
+                QMessageBox.critical(self, "CSSync",
                                      "rsync não encontrado.\n\nInstale com:\n" + install_hint())
                 return
 
@@ -493,7 +493,7 @@ if QT_AVAILABLE:
         # ---------------- Ajuda ----------------
         def show_help(self):
             dlg = QDialog(self)
-            dlg.setWindowTitle("Ajuda — Robocopy Fácil")
+            dlg.setWindowTitle("Ajuda — CSSync")
             dlg.resize(860, 680)
             lay = QVBoxLayout(dlg)
             view = QPlainTextEdit()  # usaremos HTML via QTextEdit
@@ -541,11 +541,11 @@ if QT_AVAILABLE:
             <ul>
             <li>Pendrive ou HD em FAT32/exFAT: marque <i>Tolerância de 1s na data</i> para evitar recópias.</li>
             <li>Arquivos negando acesso (donos/permissões): abra o app com <b>sudo</b> e marque dono, grupo e ACLs.</li>
-            <li>Registro do que foi copiado: marque <b>--log-file</b> (gera robocopy-facil.log na sua pasta).</li>
+            <li>Registro do que foi copiado: marque <b>--log-file</b> (gera cssync.log na sua pasta).</li>
             <li>A cor escolhida em <i>Cor do texto da cópia</i> vale para a janela do console da cópia.</li>
             </ul>
 
-            <p style="color:{cinza};font-size:12px;">Robocopy Fácil v{APP_VERSION} (Linux/Qt · rsync) — © 2026 Cristiano Silveira Silva — CC BY 4.0</p>
+            <p style="color:{cinza};font-size:12px;">CSSync v{APP_VERSION} (Linux/Qt · rsync) — © 2026 Cristiano Silveira Silva — CC BY 4.0</p>
             </div>
             """
 
@@ -557,8 +557,8 @@ def main():
     if not shutil.which("rsync"):
         print("Aviso: rsync não encontrado. O app abre, mas instale com:\n  " + install_hint())
     app = QApplication(sys.argv)
-    app.setApplicationName("Robocopy Fácil")
-    win = RoboCopyWindow()
+    app.setApplicationName("CSSync")
+    win = CSSyncWindow()
     win.show()
     sys.exit(app.exec())
 

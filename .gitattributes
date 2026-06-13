@@ -5,7 +5,7 @@
 *.py                       text eol=lf
 *.desktop                  text eol=lf
 *.svg                      text eol=lf
-linux/packaging/robocopy-facil text eol=lf
+linux/packaging/cssync text eol=lf
 
 # Arquivos do Windows ficam com CRLF
 *.ps1                      text eol=crlf
