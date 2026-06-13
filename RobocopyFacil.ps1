@@ -1,5 +1,5 @@
 ﻿# =====================================================================
-#  Robocopy Facil v1.2 — interface grafica simples para o Robocopy do Windows
+#  Robocopy Facil v1.3 — interface grafica simples para o Robocopy do Windows
 #  © 2026 Cristiano Silveira Silva — Licença CC BY 4.0
 #  Requisitos: nenhum. Usa apenas PowerShell + .NET, ja incluidos no Windows.
 #  Para abrir: clique duas vezes em "Iniciar - Robocopy Facil.bat"
@@ -36,6 +36,14 @@ $opcoes = @(
 
 # Flags de desempenho/segurança usadas pelos três botões de modo
 $flagsBase = @('/MT:8', '/R:1', '/W:2', '/XJ', '/DCOPY:DAT')
+
+# Pastas e arquivos de sistema do Windows que nunca devem ir para backup.
+# Evita erros de acesso negado ao copiar a raiz de um drive e, no modo
+# espelhar, também protege essas pastas do DESTINO contra exclusão.
+$exclusoesSistema = @(
+    '/XD', '"$RECYCLE.BIN"', '"System Volume Information"', '"Recovery"',
+    '/XF', '"pagefile.sys"', '"hiberfil.sys"', '"swapfile.sys"'
+)
 
 # Cores dos modos (usadas nos botões e na Ajuda)
 $corAtualizar = [System.Drawing.Color]::FromArgb(34, 120, 70)
@@ -208,7 +216,7 @@ $btnAtualizar.BackColor = $corAtualizar
 $btnAtualizar.ForeColor = [System.Drawing.Color]::White
 $btnAtualizar.FlatStyle = 'Flat'
 $btnAtualizar.Font      = New-Object System.Drawing.Font('Segoe UI', 12.5, [System.Drawing.FontStyle]::Bold)
-$tooltip.SetToolTip($btnAtualizar, "Comportamento padrão do robocopy com /E:`ncompara data e tamanho de cada arquivo, copia o que é novo ou foi alterado em A`ne pula o que está idêntico. Nada é apagado no destino.")
+$tooltip.SetToolTip($btnAtualizar, "Comportamento padrão do robocopy com /E:`ncompara data e tamanho de cada arquivo, copia o que é novo ou foi alterado em A`ne pula o que está idêntico. Nada é apagado no destino.`nPastas de sistema (`$RECYCLE.BIN, System Volume Information) são ignoradas automaticamente.")
 
 # ----- Botão espelhar -----
 $btnEspelhar           = New-Object System.Windows.Forms.Button
@@ -219,7 +227,7 @@ $btnEspelhar.BackColor = $corEspelhar
 $btnEspelhar.ForeColor = [System.Drawing.Color]::White
 $btnEspelhar.FlatStyle = 'Flat'
 $btnEspelhar.Font      = New-Object System.Drawing.Font('Segoe UI', 12, [System.Drawing.FontStyle]::Bold)
-$tooltip.SetToolTip($btnEspelhar, "Usa /MIR: além de copiar novos e alterados, APAGA do destino`ntudo que não existir mais na origem. Pede confirmação antes.")
+$tooltip.SetToolTip($btnEspelhar, "Usa /MIR: além de copiar novos e alterados, APAGA do destino`ntudo que não existir mais na origem. Pede confirmação antes.`nPastas de sistema (`$RECYCLE.BIN, System Volume Information) são ignoradas`nna cópia e protegidas contra exclusão no destino.")
 
 # ----- Botões secundários -----
 $btnExec           = New-Object System.Windows.Forms.Button
@@ -250,7 +258,7 @@ $btnAjuda.ForeColor = $corNovos
 
 # ----- Rodapé -----
 $lblRodape           = New-Object System.Windows.Forms.Label
-$lblRodape.Text      = 'v1.2 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
+$lblRodape.Text      = 'v1.3 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
 $lblRodape.Location  = New-Object System.Drawing.Point(12, 768)
 $lblRodape.Size      = New-Object System.Drawing.Size(916, 26)
 $lblRodape.Font      = New-Object System.Drawing.Font('Segoe UI', 10.5)
@@ -407,9 +415,9 @@ function Mostrar-Ajuda {
     Add-Ajuda $rtb "8 ou mais = houve erro em algum arquivo`n`n" $corPerigo $true 12
 
     Add-Ajuda $rtb "  DICAS`n" $preto $true 13
-    Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera robocopy-facil.log).`n  • A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.`n`n" $preto $false 12
+    Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera robocopy-facil.log).`n  • A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.`n  • Os 3 botões de modo ignoram automaticamente pastas e arquivos de sistema do Windows:`n    `$RECYCLE.BIN, System Volume Information, Recovery, pagefile.sys, hiberfil.sys e swapfile.sys.`n`n" $preto $false 12
 
-    Add-Ajuda $rtb "  Robocopy Fácil v1.2 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
+    Add-Ajuda $rtb "  Robocopy Fácil v1.3 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
 
     $rtb.SelectionStart = 0
     $rtb.ScrollToCaret()
@@ -431,18 +439,18 @@ foreach ($cb in $script:checkboxes) { $cb.Add_CheckedChanged({ Update-Preview })
 # ATUALIZAR: comportamento padrão do robocopy com /E — copia arquivos novos
 # e alterados (compara data e tamanho), pula idênticos, não apaga nada em B.
 $btnAtualizar.Add_Click({
-    Executar (@('/E') + $flagsBase)
+    Executar (@('/E') + $flagsBase + $exclusoesSistema)
 })
 
 # ESPELHAR: /MIR = atualizar + apagar de B o que não existe em A (com confirmação).
 $btnEspelhar.Add_Click({
-    Executar (@('/MIR') + $flagsBase)
+    Executar (@('/MIR') + $flagsBase + $exclusoesSistema)
 })
 
 # SÓ NOVOS: /XC ignora alterados, /XN ignora mais novos, /XO ignora mais
 # antigos -> copia apenas o que NÃO existe no destino.
 $btnNovos.Add_Click({
-    Executar (@('/E', '/XC', '/XN', '/XO') + $flagsBase)
+    Executar (@('/E', '/XC', '/XN', '/XO') + $flagsBase + $exclusoesSistema)
 })
 
 $btnExec.Add_Click({ Executar (Get-FlagsMarcadas) })

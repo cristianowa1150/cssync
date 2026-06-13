@@ -9,7 +9,7 @@
 [![Licença: CC BY 4.0](https://img.shields.io/badge/Licen%C3%A7a-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/deed.pt-br)
 ![Windows 10/11](https://img.shields.io/badge/Windows-10%2F11-0078D6?logo=windows11&logoColor=white)
 ![PowerShell 5.1+](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.2.0-2ea44f)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.3.0-2ea44f)
 ![Dependências](https://img.shields.io/badge/depend%C3%AAncias-zero-success)
 
 O **Robocopy Fácil** é um painel de controle para o `robocopy`, a ferramenta de cópia mais confiável do Windows. Ele **não copia nada por conta própria**: apenas monta o comando, mostra exatamente o que será executado e abre o console nativo com o relatório oficial do robocopy. Quem copia é o Windows — o aplicativo é só a interface.
@@ -25,6 +25,7 @@ O **Robocopy Fácil** é um painel de controle para o `robocopy`, a ferramenta d
 - **Pré-visualização ao vivo** do comando exato antes de executar
 - **Exclusões fáceis**: campos para ignorar arquivos (`/XF`) e pastas (`/XD`)
 - **Cor do texto da janela de cópia** à sua escolha: verde estilo Linux (padrão), amarelo, ciano, branco e outras
+- **Pastas de sistema ignoradas automaticamente** nos 3 modos: `$RECYCLE.BIN`, `System Volume Information`, `Recovery`, `pagefile.sys`, `hiberfil.sys`, `swapfile.sys` — sem erros de acesso negado ao copiar a raiz de um drive
 - **Janela de Ajuda colorida** explicando modos, códigos de saída e dicas
 - **Zero dependências**: usa apenas PowerShell + .NET, já incluídos em qualquer Windows 10/11
 
