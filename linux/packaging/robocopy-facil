@@ -1,0 +1,3 @@
+#!/bin/sh
+# Lançador do RoboCopy Fácil
+exec python3 /usr/lib/robocopy-facil/robocopy_facil_linux.py "$@"

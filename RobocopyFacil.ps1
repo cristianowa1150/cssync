@@ -1,5 +1,5 @@
 ﻿# =====================================================================
-#  Robocopy Facil v1.3 — interface grafica simples para o Robocopy do Windows
+#  Robocopy Facil v1.4 — interface grafica simples para o Robocopy do Windows
 #  © 2026 Cristiano Silveira Silva — Licença CC BY 4.0
 #  Requisitos: nenhum. Usa apenas PowerShell + .NET, ja incluidos no Windows.
 #  Para abrir: clique duas vezes em "Iniciar - Robocopy Facil.bat"
@@ -59,8 +59,9 @@ $form                 = New-Object System.Windows.Forms.Form
 $form.Text            = 'Robocopy Fácil  —  copiar FONTE (A)  →  DESTINO (B)'
 $form.ClientSize      = New-Object System.Drawing.Size(940, 798)
 $form.StartPosition   = 'CenterScreen'
-$form.FormBorderStyle = 'FixedSingle'
-$form.MaximizeBox     = $false
+$form.FormBorderStyle = 'Sizable'
+$form.MaximizeBox     = $true
+$form.MinimumSize     = New-Object System.Drawing.Size(760, 600)
 $form.Font            = New-Object System.Drawing.Font('Segoe UI', 12)
 
 # Ícone da janela: do próprio .exe (quando compilado) ou do .ico ao lado do script
@@ -258,11 +259,44 @@ $btnAjuda.ForeColor = $corNovos
 
 # ----- Rodapé -----
 $lblRodape           = New-Object System.Windows.Forms.Label
-$lblRodape.Text      = 'v1.3 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
+$lblRodape.Text      = 'v1.4 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
 $lblRodape.Location  = New-Object System.Drawing.Point(12, 768)
 $lblRodape.Size      = New-Object System.Drawing.Size(916, 26)
 $lblRodape.Font      = New-Object System.Drawing.Font('Segoe UI', 10.5)
 $lblRodape.ForeColor = [System.Drawing.Color]::DimGray
+
+# ---------------------------------------------------------------------
+# Responsividade: âncoras para a janela poder ser redimensionada/maximizada.
+# A caixa de opções (com rolagem) cresce ou encolhe; o resto acompanha as bordas.
+# ---------------------------------------------------------------------
+$A       = [System.Windows.Forms.AnchorStyles]
+$ancTL   = $A::Top    -bor $A::Left
+$ancTLR  = $A::Top    -bor $A::Left   -bor $A::Right
+$ancTR   = $A::Top    -bor $A::Right
+$ancTBLR = $A::Top    -bor $A::Bottom -bor $A::Left -bor $A::Right
+$ancBL   = $A::Bottom -bor $A::Left
+$ancBR   = $A::Bottom -bor $A::Right
+$ancBLR  = $A::Bottom -bor $A::Left   -bor $A::Right
+
+# Topo (acompanha o topo; as caixas de pasta esticam na largura)
+$lblSrc.Anchor = $ancTL;  $txtSrc.Anchor = $ancTLR; $btnSrc.Anchor = $ancTR
+$lblDst.Anchor = $ancTL;  $txtDst.Anchor = $ancTLR; $btnDst.Anchor = $ancTR
+
+# Meio (absorve o crescimento/encolhimento vertical)
+$grp.Anchor    = $ancTBLR
+$painel.Anchor = $ancTBLR
+
+# Base (acompanha a borda de baixo)
+$lblXF.Anchor   = $ancBL;  $txtXF.Anchor = $ancBL
+$lblXD.Anchor   = $ancBR;  $txtXD.Anchor = $ancBR
+$lblHint.Anchor = $ancBL
+$lblPrev.Anchor = $ancBL;  $lblCor.Anchor = $ancBR; $cmbCor.Anchor = $ancBR
+$txtPrev.Anchor = $ancBLR
+$btnAtualizar.Anchor = $ancBLR
+$btnEspelhar.Anchor  = $ancBLR
+$btnExec.Anchor  = $ancBL; $btnSim.Anchor = $ancBL; $btnNovos.Anchor = $ancBL
+$btnAjuda.Anchor = $ancBR
+$lblRodape.Anchor = $ancBLR
 
 $form.Controls.AddRange(@($lblSrc, $txtSrc, $btnSrc, $lblDst, $txtDst, $btnDst, $grp,
     $lblXF, $txtXF, $lblXD, $txtXD, $lblHint, $lblCor, $cmbCor, $lblPrev, $txtPrev,
@@ -417,7 +451,7 @@ function Mostrar-Ajuda {
     Add-Ajuda $rtb "  DICAS`n" $preto $true 13
     Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera robocopy-facil.log).`n  • A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.`n  • Os 3 botões de modo ignoram automaticamente pastas e arquivos de sistema do Windows:`n    `$RECYCLE.BIN, System Volume Information, Recovery, pagefile.sys, hiberfil.sys e swapfile.sys.`n`n" $preto $false 12
 
-    Add-Ajuda $rtb "  Robocopy Fácil v1.3 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
+    Add-Ajuda $rtb "  Robocopy Fácil v1.4 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
 
     $rtb.SelectionStart = 0
     $rtb.ScrollToCaret()
@@ -462,6 +496,24 @@ $btnSim.Add_Click({
 })
 
 $btnAjuda.Add_Click({ Mostrar-Ajuda })
+
+# ---------------------------------------------------------------------
+# Tamanho inicial menor, que cabe em telas de 14" (ex.: 1366x768). A janela
+# pode ser redimensionada e maximizada; o conteúdo se ajusta pelas âncoras.
+# (Definido aqui, depois das âncoras, para o layout reposicionar corretamente.)
+# ---------------------------------------------------------------------
+$form.ClientSize = New-Object System.Drawing.Size(940, 670)
+
+# Garante que a janela nunca abra maior que a área útil da tela (telas pequenas)
+$form.Add_Shown({
+    $area = [System.Windows.Forms.Screen]::FromControl($form).WorkingArea
+    $larg = [Math]::Min($form.Width,  $area.Width)
+    $alt  = [Math]::Min($form.Height, $area.Height)
+    $form.Size = New-Object System.Drawing.Size($larg, $alt)
+    $x = $area.X + [int](($area.Width  - $form.Width)  / 2)
+    $y = $area.Y + [int](($area.Height - $form.Height) / 2)
+    $form.Location = New-Object System.Drawing.Point([Math]::Max($area.X, $x), [Math]::Max($area.Y, $y))
+})
 
 Update-Preview
 [void]$form.ShowDialog()

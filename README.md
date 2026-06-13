@@ -9,10 +9,15 @@
 [![Licença: CC BY 4.0](https://img.shields.io/badge/Licen%C3%A7a-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/deed.pt-br)
 ![Windows 10/11](https://img.shields.io/badge/Windows-10%2F11-0078D6?logo=windows11&logoColor=white)
 ![PowerShell 5.1+](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.3.0-2ea44f)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.4.0-2ea44f)
 ![Dependências](https://img.shields.io/badge/depend%C3%AAncias-zero-success)
+[![Linux (rsync)](https://img.shields.io/badge/Linux-rsync-FCC624?logo=linux&logoColor=black)](linux/)
 
 O **Robocopy Fácil** é um painel de controle para o `robocopy`, a ferramenta de cópia mais confiável do Windows. Ele **não copia nada por conta própria**: apenas monta o comando, mostra exatamente o que será executado e abre o console nativo com o relatório oficial do robocopy. Quem copia é o Windows — o aplicativo é só a interface.
+
+> 🐧 **Usa Linux?** Há um porte nativo (Fedora/Debian) que faz o mesmo papel usando o `rsync` — veja a pasta **[`linux/`](linux/)**.
+
+![Robocopy Fácil no Windows](linux/docs/screenshot-windows.png)
 
 ## ✨ Recursos
 
@@ -27,6 +32,7 @@ O **Robocopy Fácil** é um painel de controle para o `robocopy`, a ferramenta d
 - **Cor do texto da janela de cópia** à sua escolha: verde estilo Linux (padrão), amarelo, ciano, branco e outras
 - **Pastas de sistema ignoradas automaticamente** nos 3 modos: `$RECYCLE.BIN`, `System Volume Information`, `Recovery`, `pagefile.sys`, `hiberfil.sys`, `swapfile.sys` — sem erros de acesso negado ao copiar a raiz de um drive
 - **Janela de Ajuda colorida** explicando modos, códigos de saída e dicas
+- **Janela redimensionável e maximizável**, que se ajusta a telas pequenas (14" / 1366×768)
 - **Zero dependências**: usa apenas PowerShell + .NET, já incluídos em qualquer Windows 10/11
 
 ## 📥 Download e uso
@@ -61,6 +67,18 @@ Para gerar o executável:
 Install-Module ps2exe -Scope CurrentUser   # uma única vez
 .\gerar-exe.ps1
 ```
+
+## 🐧 Versão Linux (rsync)
+
+Existe um porte nativo para Linux que faz exatamente o mesmo papel — origem (A) → destino (B), os mesmos 3 modos, simulação segura e cor do console — usando o **`rsync`** no lugar do robocopy. Tudo na pasta **[`linux/`](linux/)**:
+
+| Sistema | Instalador (`linux/dist/`) | Interface |
+|---|---|---|
+| Fedora (Workstation/KDE) | `robocopy-facil-1.2.0-1.noarch.rpm` | Qt (nativa) |
+| Debian 13+ / Ubuntu 24.10+ | `robocopy-facil_1.2.0_all.deb` | Qt (nativa) |
+| Debian 12 (bookworm) | `robocopy-facil_1.2.0_tkinter_all.deb` | Tkinter |
+
+Os instaladores também estão anexados na [página de Releases](../../releases). Veja [`linux/README.md`](linux/README.md) para instruções completas.
 
 ## 🤝 Como colaborar
 
