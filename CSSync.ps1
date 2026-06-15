@@ -1,5 +1,5 @@
 ﻿# =====================================================================
-#  CSSync v1.5 — interface grafica simples para o Robocopy do Windows
+#  CSSync v1.6 — interface grafica simples para o Robocopy do Windows
 #  © 2026 Cristiano Silveira Silva — Licença CC BY 4.0
 #  Requisitos: nenhum. Usa apenas PowerShell + .NET, ja incluidos no Windows.
 #  Para abrir: clique duas vezes em "Iniciar - CSSync.bat"
@@ -259,7 +259,7 @@ $btnAjuda.ForeColor = $corNovos
 
 # ----- Rodapé -----
 $lblRodape           = New-Object System.Windows.Forms.Label
-$lblRodape.Text      = 'v1.5 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
+$lblRodape.Text      = 'v1.6 — © 2026 Cristiano Silveira Silva   |   Códigos de saída 0 a 7 = sucesso (0 = nada a copiar, 1 = copiou); 8 ou mais = erro.'
 $lblRodape.Location  = New-Object System.Drawing.Point(12, 768)
 $lblRodape.Size      = New-Object System.Drawing.Size(916, 26)
 $lblRodape.Font      = New-Object System.Drawing.Font('Segoe UI', 10.5)
@@ -451,7 +451,7 @@ function Mostrar-Ajuda {
     Add-Ajuda $rtb "  DICAS`n" $preto $true 13
     Add-Ajuda $rtb "  • Pendrive ou HD externo em FAT32/exFAT: marque /FFT para evitar recópias desnecessárias.`n  • Arquivos negando acesso: abra o aplicativo como administrador e marque /B.`n  • Quer um registro do que foi copiado: marque a opção /TEE (gera cssync.log).`n  • A cor escolhida em 'Cor do texto da cópia' vale para toda a janela de console da cópia.`n  • Os 3 botões de modo ignoram automaticamente pastas e arquivos de sistema do Windows:`n    `$RECYCLE.BIN, System Volume Information, Recovery, pagefile.sys, hiberfil.sys e swapfile.sys.`n`n" $preto $false 12
 
-    Add-Ajuda $rtb "  CSSync v1.5 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
+    Add-Ajuda $rtb "  CSSync v1.6 — © 2026 Cristiano Silveira Silva — Licença CC BY 4.0`n" $cinza $false 11
 
     $rtb.SelectionStart = 0
     $rtb.ScrollToCaret()

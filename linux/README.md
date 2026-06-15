@@ -25,9 +25,9 @@ Os instaladores `.rpm`/`.deb` são gerados a partir do código pelos scripts em 
 
 | Seu sistema | Arquivo gerado | Interface |
 |---|---|---|
-| Fedora (Workstation ou KDE) | `cssync-1.5.0-1.noarch.rpm` | Qt (nativa) |
-| Debian 13 (trixie) / Ubuntu 24.10+ | `cssync_1.5.0_all.deb` | Qt (nativa) |
-| Debian 12 (bookworm) | `cssync_1.5.0_tkinter_all.deb` | Tkinter |
+| Fedora (Workstation ou KDE) | `cssync-1.6.0-1.noarch.rpm` | Qt (nativa) |
+| Debian 13 (trixie) / Ubuntu 24.10+ | `cssync_1.6.0_all.deb` | Qt (nativa) |
+| Debian 12 (bookworm) | `cssync_1.6.0_tkinter_all.deb` | Tkinter |
 
 Para ver a sua versão do Debian: `cat /etc/debian_version`.
 
@@ -46,19 +46,19 @@ Os pacotes são gravados na pasta `dist/`.
 
 ### Fedora
 ```bash
-sudo dnf install ./dist/cssync-1.5.0-1.noarch.rpm
+sudo dnf install ./dist/cssync-1.6.0-1.noarch.rpm
 ```
 Dependências (instaladas automaticamente): `python3-pyside6`, `rsync`.
 
 ### Debian 13+ / Ubuntu recente
 ```bash
-sudo apt install ./dist/cssync_1.5.0_all.deb
+sudo apt install ./dist/cssync_1.6.0_all.deb
 ```
 Dependências: `python3-pyside6.qtwidgets` (+ `qtgui`, `qtcore`), `rsync`.
 
 ### Debian 12
 ```bash
-sudo apt install ./dist/cssync_1.5.0_tkinter_all.deb
+sudo apt install ./dist/cssync_1.6.0_tkinter_all.deb
 ```
 Dependências: `python3-tk`, `rsync`.
 

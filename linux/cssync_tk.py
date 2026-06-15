@@ -21,7 +21,7 @@ import queue
 import threading
 import subprocess
 
-APP_VERSION = "1.5"
+APP_VERSION = "1.6"
 LOG_PATH = os.path.expanduser("~/cssync.log")
 
 # ---------------------------------------------------------------------

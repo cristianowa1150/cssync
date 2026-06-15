@@ -10,7 +10,7 @@
 ![Windows 10/11](https://img.shields.io/badge/Windows-10%2F11-0078D6?logo=windows11&logoColor=white)
 ![PowerShell 5.1+](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)
 [![Linux (rsync)](https://img.shields.io/badge/Linux-rsync-FCC624?logo=linux&logoColor=black)](linux/)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.5.0-2ea44f)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.6.0-2ea44f)
 ![Dependências](https://img.shields.io/badge/Windows%3A%20depend%C3%AAncias-zero-success)
 
 O **CSSync** é um painel de controle para a ferramenta de cópia mais confiável de cada sistema: o **`robocopy`** no Windows e o **`rsync`** no Linux. Ele **não copia nada por conta própria** — apenas monta o comando, mostra exatamente o que será executado e abre o console com o relatório oficial da ferramenta. Quem copia é o sistema; o aplicativo é só a interface.

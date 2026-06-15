@@ -4,7 +4,7 @@
 # Uso:  bash packaging/build-deb.sh
 set -e
 
-VER="1.5.0"
+VER="1.6.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$SCRIPT_DIR")"
 DIST="$ROOT/dist"

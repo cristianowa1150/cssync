@@ -4,7 +4,7 @@
 # Uso:  bash packaging/build-rpm.sh
 set -e
 
-VER="1.5.0"
+VER="1.6.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(dirname "$SCRIPT_DIR")"
 DIST="$ROOT/dist"
@@ -63,7 +63,10 @@ exit 0
 /usr/share/icons/hicolor/scalable/apps/cssync.svg
 
 %changelog
-* Fri Jun 12 2026 Cristiano Silveira Silva <noreply@localhost> - ${VER}-1
+* Mon Jun 15 2026 Cristiano Silveira Silva <noreply@localhost> - ${VER}-1
+- Opcao de copia delta (rsync --no-whole-file) em todos os modos
+- Fonte maior na lista de opcoes
+* Fri Jun 12 2026 Cristiano Silveira Silva <noreply@localhost> - 1.5.0-1
 - Versao nativa Qt (PySide6) para KDE/Plasma
 SPEC
 

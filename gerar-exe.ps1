@@ -4,7 +4,7 @@
 #  © 2026 Cristiano Silveira Silva
 # =====================================================================
 
-$versao = '1.5.0.0'
+$versao = '1.6.0.0'
 
 if (-not (Get-Module -ListAvailable ps2exe)) {
     Write-Host 'Instalando o modulo ps2exe...'
